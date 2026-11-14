@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import AddProductModal from "./components/AddProductModal.jsx";
 import DeleteProductModal from "./components/DeleteProductModal.jsx";
+import EditProductModal from "./components/EditProductModal.jsx";
 import ProductCard from "./components/ProductCard.jsx";
 import "./App.css";
 
@@ -32,6 +33,13 @@ function App() {
 
   function handleDelete(id) {
     setProducts((current) => current.filter((product) => product.id !== id));
+    setModal(null);
+  }
+
+  function handleEdit(id, data) {
+    setProducts((current) =>
+      current.map((product) => (product.id === id ? { ...product, ...data } : product)),
+    );
     setModal(null);
   }
 
@@ -89,6 +97,7 @@ function App() {
             <ProductCard
               key={product.id}
               product={product}
+              onEdit={() => setModal({ type: "edit", id: product.id })}
               onDelete={() => setModal({ type: "delete", id: product.id })}
             />
           ))}
@@ -103,6 +112,15 @@ function App() {
 
       {modal?.type === "add" && (
         <AddProductModal onClose={() => setModal(null)} onSubmit={handleAdd} />
+      )}
+
+      {modal?.type === "edit" && selected && (
+        <EditProductModal
+          key={selected.id}
+          product={selected}
+          onClose={() => setModal(null)}
+          onSubmit={(data) => handleEdit(selected.id, data)}
+        />
       )}
 
       {modal?.type === "delete" && selected && (
