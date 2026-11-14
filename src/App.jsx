@@ -1,9 +1,10 @@
 import { useState } from "react";
 
+import AddProductModal from "./components/AddProductModal.jsx";
 import ProductCard from "./components/ProductCard.jsx";
 import "./App.css";
 
-const products = [
+const SEED_PRODUCTS = [
   { id: 1, nama: "Pulpen", harga: 5000 },
   { id: 2, nama: "Buku Tulis", harga: 12000 },
   { id: 3, nama: "Spidol", harga: 8000 },
@@ -12,12 +13,21 @@ const products = [
 ];
 
 function App() {
+  const [products, setProducts] = useState(SEED_PRODUCTS);
+  const [nextId, setNextId] = useState(SEED_PRODUCTS.length + 1);
   const [query, setQuery] = useState("");
+  const [modal, setModal] = useState(null);
 
   const keyword = query.trim().toLowerCase();
   const visible = keyword
     ? products.filter((product) => product.nama.toLowerCase().includes(keyword))
     : products;
+
+  function handleAdd(data) {
+    setProducts((current) => [...current, { id: nextId, ...data }]);
+    setNextId((current) => current + 1);
+    setModal(null);
+  }
 
   return (
     <main className="app">
@@ -26,7 +36,11 @@ function App() {
           <h1 className="app__title">Manajemen Produk</h1>
           <p className="app__subtitle">Kelola daftar produk dan harga dalam satu tempat.</p>
         </div>
-        <button type="button" className="btn btn--primary">
+        <button
+          type="button"
+          className="btn btn--primary"
+          onClick={() => setModal({ type: "add" })}
+        >
           + Tambah Produk
         </button>
       </header>
@@ -71,6 +85,10 @@ function App() {
       <p className="footer">
         Menampilkan {visible.length} dari {products.length} produk
       </p>
+
+      {modal?.type === "add" && (
+        <AddProductModal onClose={() => setModal(null)} onSubmit={handleAdd} />
+      )}
     </main>
   );
 }
