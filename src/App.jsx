@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import AddProductModal from "./components/AddProductModal.jsx";
+import DeleteProductModal from "./components/DeleteProductModal.jsx";
 import ProductCard from "./components/ProductCard.jsx";
 import "./App.css";
 
@@ -28,6 +29,16 @@ function App() {
     setNextId((current) => current + 1);
     setModal(null);
   }
+
+  function handleDelete(id) {
+    setProducts((current) => current.filter((product) => product.id !== id));
+    setModal(null);
+  }
+
+  const selected =
+    modal && modal.type !== "add"
+      ? products.find((product) => product.id === modal.id)
+      : null;
 
   return (
     <main className="app">
@@ -75,7 +86,11 @@ function App() {
       {visible.length > 0 ? (
         <div className="grid">
           {visible.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard
+              key={product.id}
+              product={product}
+              onDelete={() => setModal({ type: "delete", id: product.id })}
+            />
           ))}
         </div>
       ) : (
@@ -88,6 +103,14 @@ function App() {
 
       {modal?.type === "add" && (
         <AddProductModal onClose={() => setModal(null)} onSubmit={handleAdd} />
+      )}
+
+      {modal?.type === "delete" && selected && (
+        <DeleteProductModal
+          product={selected}
+          onClose={() => setModal(null)}
+          onConfirm={() => handleDelete(selected.id)}
+        />
       )}
     </main>
   );
