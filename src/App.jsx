@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
+import * as api from "./api/products.js";
 import AddProductModal from "./components/AddProductModal.jsx";
 import DeleteProductModal from "./components/DeleteProductModal.jsx";
 import EditProductModal from "./components/EditProductModal.jsx";
@@ -7,39 +8,55 @@ import ProductCard from "./components/ProductCard.jsx";
 import { btnPrimary } from "./lib/styles.js";
 import "./index.css";
 
-const SEED_PRODUCTS = [
-  { id: 1, nama: "Pulpen", harga: 5000 },
-  { id: 2, nama: "Buku Tulis", harga: 12000 },
-  { id: 3, nama: "Spidol", harga: 8000 },
-  { id: 4, nama: "Penggaris", harga: 6000 },
-  { id: 5, nama: "Penghapus", harga: 3000 },
-];
-
 function App() {
-  const [products, setProducts] = useState(SEED_PRODUCTS);
-  const [nextId, setNextId] = useState(SEED_PRODUCTS.length + 1);
+  const [products, setProducts] = useState([]);
+  const [status, setStatus] = useState("loading"); // loading | ready | error
+  const [loadError, setLoadError] = useState(null);
   const [query, setQuery] = useState("");
   const [modal, setModal] = useState(null);
 
+  useEffect(() => {
+    let cancelled = false;
+
+    api
+      .getProducts()
+      .then((data) => {
+        if (cancelled) return;
+        setProducts(data);
+        setStatus("ready");
+      })
+      .catch((error) => {
+        if (cancelled) return;
+        setLoadError(error.message);
+        setStatus("error");
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const keyword = query.trim().toLowerCase();
   const visible = keyword
-    ? products.filter((product) => product.nama.toLowerCase().includes(keyword))
+    ? products.filter((product) => product.name.toLowerCase().includes(keyword))
     : products;
 
-  function handleAdd(data) {
-    setProducts((current) => [...current, { id: nextId, ...data }]);
-    setNextId((current) => current + 1);
+  async function handleAdd(data) {
+    const created = await api.createProduct(data);
+    setProducts((current) => [...current, created]);
     setModal(null);
   }
 
-  function handleEdit(id, data) {
+  async function handleEdit(id, data) {
+    const updated = await api.updateProduct(id, data);
     setProducts((current) =>
-      current.map((product) => (product.id === id ? { ...product, ...data } : product)),
+      current.map((product) => (product.id === id ? updated : product)),
     );
     setModal(null);
   }
 
-  function handleDelete(id) {
+  async function handleDelete(id) {
+    await api.deleteProduct(id);
     setProducts((current) => current.filter((product) => product.id !== id));
     setModal(null);
   }
@@ -48,6 +65,24 @@ function App() {
     modal && modal.type !== "add"
       ? products.find((product) => product.id === modal.id)
       : null;
+
+  if (status === "loading") {
+    return (
+      <main className="mx-auto w-full max-w-[1080px] px-6 py-10">
+        <p className="m-0 py-12 text-center text-muted">Memuat produk...</p>
+      </main>
+    );
+  }
+
+  if (status === "error") {
+    return (
+      <main className="mx-auto w-full max-w-[1080px] px-6 py-10">
+        <p className="m-0 py-12 text-center text-danger">
+          Gagal memuat produk: {loadError}
+        </p>
+      </main>
+    );
+  }
 
   return (
     <main className="mx-auto w-full max-w-[1080px] px-6 py-10">
@@ -135,4 +170,3 @@ function App() {
 }
 
 export default App;
-

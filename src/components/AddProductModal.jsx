@@ -28,7 +28,7 @@ function AddProductModal({ onClose, onSubmit }) {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [onClose]);
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
 
     const trimmed = nama.trim();
@@ -44,7 +44,11 @@ function AddProductModal({ onClose, onSubmit }) {
       return;
     }
 
-    onSubmit({ nama: trimmed, harga: value });
+    try {
+      await onSubmit({ name: trimmed, price: value });
+    } catch (backendError) {
+      setError(backendError.message);
+    }
   }
 
   return (
