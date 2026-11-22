@@ -1,39 +1,27 @@
-:root {
-  --page-bg: #f4f6fa;
-  --surface: #ffffff;
-  --border: #e9ecf3;
-  --border-strong: #d8dee9;
-  --text: #1f2430;
-  --muted: #6b7a99;
-  --navy: #233d80;
-  --primary: #0058f9;
-  --danger: #db2931;
-  --danger-bg: #fdebeb;
+@import "tailwindcss";
 
-  --radius: 10px;
-  --sans: system-ui, "Segoe UI", Roboto, sans-serif;
-
-  font: 16px/1.5 var(--sans);
-  color-scheme: light;
-  color: var(--text);
-  background: var(--page-bg);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
+@theme {
+  --color-page: #f4f6fa;
+  --color-surface: #ffffff;
+  --color-line: #e9ecf3;
+  --color-line-strong: #d8dee9;
+  --color-ink: #1f2430;
+  --color-muted: #6b7a99;
+  --color-navy: #233d80;
+  --color-primary: #0058f9;
+  --color-primary-dark: #0049d4;
+  --color-danger: #db2931;
+  --color-danger-bg: #fdebeb;
+  --color-danger-border: #f3cdcf;
+  --color-danger-dark: #c02329;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
-  background: var(--page-bg);
-}
-
-button,
-input {
-  font: inherit;
+  background: var(--color-page);
+  color: var(--color-ink);
+  font: 16px/1.5 system-ui, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }

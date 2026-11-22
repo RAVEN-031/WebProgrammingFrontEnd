@@ -4,7 +4,8 @@ import AddProductModal from "./components/AddProductModal.jsx";
 import DeleteProductModal from "./components/DeleteProductModal.jsx";
 import EditProductModal from "./components/EditProductModal.jsx";
 import ProductCard from "./components/ProductCard.jsx";
-import "./App.css";
+import { btnPrimary } from "./lib/styles.js";
+import "./index.css";
 
 const SEED_PRODUCTS = [
   { id: 1, nama: "Pulpen", harga: 5000 },
@@ -31,15 +32,15 @@ function App() {
     setModal(null);
   }
 
-  function handleDelete(id) {
-    setProducts((current) => current.filter((product) => product.id !== id));
-    setModal(null);
-  }
-
   function handleEdit(id, data) {
     setProducts((current) =>
       current.map((product) => (product.id === id ? { ...product, ...data } : product)),
     );
+    setModal(null);
+  }
+
+  function handleDelete(id) {
+    setProducts((current) => current.filter((product) => product.id !== id));
     setModal(null);
   }
 
@@ -49,25 +50,23 @@ function App() {
       : null;
 
   return (
-    <main className="app">
-      <header className="app__header">
+    <main className="mx-auto w-full max-w-[1080px] px-6 py-10">
+      <header className="mb-6 flex items-start justify-between gap-4">
         <div>
-          <h1 className="app__title">Manajemen Produk</h1>
-          <p className="app__subtitle">Kelola daftar produk dan harga dalam satu tempat.</p>
+          <h1 className="mb-1 text-2xl leading-tight font-semibold">Manajemen Produk</h1>
+          <p className="m-0 text-sm text-muted">
+            Kelola daftar produk dan harga dalam satu tempat.
+          </p>
         </div>
-        <button
-          type="button"
-          className="btn btn--primary"
-          onClick={() => setModal({ type: "add" })}
-        >
+        <button type="button" className={btnPrimary} onClick={() => setModal({ type: "add" })}>
           + Tambah Produk
         </button>
       </header>
 
-      <div className="toolbar">
-        <div className="search">
+      <div className="mb-4 flex items-center justify-between gap-4">
+        <div className="relative max-w-[22rem] flex-1">
           <svg
-            className="search__icon"
+            className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted"
             width="16"
             height="16"
             viewBox="0 0 24 24"
@@ -86,13 +85,14 @@ function App() {
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Cari nama produk..."
             aria-label="Cari nama produk"
+            className="w-full rounded-lg border border-line bg-surface py-2.5 pr-3 pl-9 text-ink placeholder:text-muted focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary"
           />
         </div>
-        <p className="count">{visible.length} produk</p>
+        <p className="m-0 text-sm whitespace-nowrap text-muted">{visible.length} produk</p>
       </div>
 
       {visible.length > 0 ? (
-        <div className="grid">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {visible.map((product) => (
             <ProductCard
               key={product.id}
@@ -103,10 +103,10 @@ function App() {
           ))}
         </div>
       ) : (
-        <p className="empty">Tidak ada produk yang cocok.</p>
+        <p className="m-0 py-12 text-center text-muted">Tidak ada produk yang cocok.</p>
       )}
 
-      <p className="footer">
+      <p className="mt-5 mb-0 text-[13px] text-muted">
         Menampilkan {visible.length} dari {products.length} produk
       </p>
 
@@ -135,3 +135,4 @@ function App() {
 }
 
 export default App;
+
