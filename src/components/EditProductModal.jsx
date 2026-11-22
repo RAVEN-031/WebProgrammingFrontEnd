@@ -15,8 +15,8 @@ import {
 } from "../lib/styles.js";
 
 function EditProductModal({ product, onClose, onSubmit }) {
-  const [nama, setNama] = useState(product.nama);
-  const [harga, setHarga] = useState(String(product.harga));
+  const [nama, setNama] = useState(product.name);
+  const [harga, setHarga] = useState(String(product.price));
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -28,7 +28,7 @@ function EditProductModal({ product, onClose, onSubmit }) {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [onClose]);
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
 
     const trimmed = nama.trim();
@@ -44,7 +44,11 @@ function EditProductModal({ product, onClose, onSubmit }) {
       return;
     }
 
-    onSubmit({ nama: trimmed, harga: value });
+    try {
+      await onSubmit({ name: trimmed, price: value });
+    } catch (backendError) {
+      setError(backendError.message);
+    }
   }
 
   return (
